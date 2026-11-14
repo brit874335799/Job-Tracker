@@ -1,0 +1,63 @@
+name: Build Android APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android 36 SDK platform
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Generate Android project & app icons
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+          npx --yes @capacitor/assets generate --android \
+            --iconBackgroundColor '#14202B' \
+            --iconBackgroundColorDark '#14202B' \
+            --splashBackgroundColor '#14202B' \
+            --splashBackgroundColorDark '#14202B'
+          npx cap sync android
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Prepare APK artifact
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk JobRecords.apk
+
+      - name: Upload JobRecords APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JobRecords-APK
+          path: JobRecords.apk
+          retention-days: 30

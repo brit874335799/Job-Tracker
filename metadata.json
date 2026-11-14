@@ -1,0 +1,6 @@
+{
+  "name": "Job Ledger",
+  "description": "Offline-first mobile ledger for mobile oil-change and battery-swap service tracking jobs, customers, time, fuel, and profit.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

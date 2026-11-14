@@ -1,0 +1,8 @@
+{
+  "appId": "com.jobrecords.app",
+  "appName": "Job Records",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}
